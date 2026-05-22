@@ -12,7 +12,7 @@ beforeEach(async () => {
   await server.start();
   loadAllFixtures(server);
   // Echo back the upserted task(s) so `af add` sees data to confirm creation
-  server.respondTo("PATCH", "/v5/tasks", ({ body }) => {
+  server.respondTo("PATCH", "/v5/tasks", ({ body }: { body: string }) => {
     const upserts = JSON.parse(body) as Array<Record<string, unknown>>;
     return { success: true, message: null, data: upserts };
   });

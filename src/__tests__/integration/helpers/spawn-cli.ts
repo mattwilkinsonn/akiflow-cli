@@ -38,16 +38,13 @@ export async function spawnCli(
   });
 
   if (opts.stdin && proc.stdin) {
-    const writer = (
-      proc.stdin as {
-        getWriter: () => {
-          write: (b: Uint8Array) => Promise<void>;
-          close: () => Promise<void>;
-        };
-      }
-    ).getWriter();
-    await writer.write(new TextEncoder().encode(opts.stdin));
-    await writer.close();
+    // proc.stdin is a Bun FileSink when stdin is piped — write + flush + end
+    const sink = proc.stdin as unknown as {
+      write: (b: Uint8Array) => void;
+      end: () => Promise<void>;
+    };
+    sink.write(new TextEncoder().encode(opts.stdin));
+    await sink.end();
   }
 
   const timeout = opts.timeoutMs ?? 10_000;

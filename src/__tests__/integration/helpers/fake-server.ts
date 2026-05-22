@@ -1,5 +1,3 @@
-import type { Server } from "bun";
-
 interface RecordedRequest {
   method: string;
   url: URL;
@@ -26,7 +24,7 @@ interface Responder {
  * `await server.stop()` in afterEach.
  */
 export class FakeAkiflowServer {
-  private server: Server | null = null;
+  private server: ReturnType<typeof Bun.serve> | null = null;
   private responders: Responder[] = [];
   public readonly requests: RecordedRequest[] = [];
   public url = "";

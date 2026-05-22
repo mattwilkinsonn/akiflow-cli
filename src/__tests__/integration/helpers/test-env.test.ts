@@ -25,7 +25,7 @@ describe("makeTestEnv", () => {
       // Env vars include the api base + cache/config dirs
       expect(env.env.AF_API_BASE).toBe("http://127.0.0.1:0");
       expect(env.env.AF_CACHE_DIR).toBe(env.cacheDir);
-      expect(env.env.AF_CONFIG_DIR.endsWith("/af")).toBe(true);
+      expect(env.env.AF_CONFIG_DIR?.endsWith("/af") ?? false).toBe(true);
     } finally {
       env.cleanup();
       expect(existsSync(env.cacheDir)).toBe(false);
