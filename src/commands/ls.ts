@@ -7,6 +7,8 @@ import * as fs from "node:fs/promises";
 import { loadPendingTasks, mergeTasks, removePendingTask } from "../lib/task-cache";
 import { syncTasksCache } from "../lib/tasks-local-cache";
 import { rrulestr } from "rrule";
+import { filterTasks as applyExtendedFilters, type TaskFilter, type StatusName } from "../lib/filters/task";
+import { parseMonth, resolveRange, type NamedRange } from "../lib/date-parser";
 
 interface TaskContext {
   tasks: Array<{
@@ -301,6 +303,75 @@ async function saveTaskContext(tasks: Task[]): Promise<void> {
   await fs.writeFile(contextFile, JSON.stringify(context, null, 2));
 }
 
+// ============================================================
+// Extended-filter mapping (fork v0.1) — args → TaskFilter
+// ============================================================
+
+const NAMED_RANGE_FLAGS: ReadonlyArray<NamedRange> = [
+  "today",
+  "tomorrow",
+  "yesterday",
+  "this-week",
+  "next-week",
+  "this-month",
+  "next-month",
+];
+
+function hasExtendedFlags(args: Record<string, unknown>): boolean {
+  if (NAMED_RANGE_FLAGS.some((n) => args[n])) return true;
+  if (args.date || args.month || args.from || args.to) return true;
+  if (args.overdue || args.planned || args.unplanned) return true;
+  if (args.status || args.tag || args.priority) return true;
+  if (args.connector || args.bucket || args.recurring) return true;
+  if (args.trashed) return true;
+  return false;
+}
+
+function buildExtendedFilter(args: Record<string, unknown>): TaskFilter {
+  const f: TaskFilter = {};
+
+  // Status
+  if (args.status) {
+    f.status = (args.status as string).split(",").map((s) => s.trim()) as StatusName[];
+  } else {
+    const aliases: StatusName[] = [];
+    if (args.trashed) aliases.push("trashed");
+    if (aliases.length > 0) f.status = aliases;
+  }
+
+  // Date range (named first)
+  const named = NAMED_RANGE_FLAGS.find((n) => args[n]);
+  if (named) {
+    const r = resolveRange(named);
+    f.from = r.from;
+    f.to = r.to;
+  } else if (args.date) {
+    const d = new Date(args.date as string);
+    f.from = d;
+    f.to = d;
+  } else if (args.month) {
+    const m = parseMonth(args.month as string);
+    if (m) {
+      f.from = new Date(m.year, m.month - 1, 1);
+      f.to = new Date(m.year, m.month, 0);
+    }
+  } else if (args.from || args.to) {
+    if (args.from) f.from = new Date(args.from as string);
+    if (args.to) f.to = new Date(args.to as string);
+  }
+
+  if (args.overdue) f.overdue = true;
+  if (args.tag) f.tag = args.tag as string;
+  if (args.priority) f.priority = Number(args.priority);
+  if (args.connector) f.connector = args.connector as string;
+  if (args.bucket) f.bucket = args.bucket as "week" | "month";
+  if (args.recurring) f.recurring = true;
+  if (args.planned) f.planned = true;
+  if (args.unplanned) f.unplanned = true;
+
+  return f;
+}
+
 export const lsCommand = defineCommand({
   meta: {
     name: "ls",
@@ -313,11 +384,15 @@ export const lsCommand = defineCommand({
     },
     all: {
       type: "boolean",
-      description: "Show all tasks",
+      description: "Show all tasks (active + done + trashed)",
     },
     done: {
       type: "boolean",
       description: "Show completed tasks",
+    },
+    trashed: {
+      type: "boolean",
+      description: "Show trashed tasks",
     },
     project: {
       type: "string",
@@ -332,10 +407,36 @@ export const lsCommand = defineCommand({
       type: "boolean",
       description: "Output as JSON",
     },
+    raw: {
+      type: "boolean",
+      description: "Output as raw API records (JSON)",
+    },
     plain: {
       type: "boolean",
       description: "Output without colors",
     },
+    // Date-range filters (extended in fork v0.1)
+    today: { type: "boolean", description: "Today's tasks" },
+    tomorrow: { type: "boolean", description: "Tomorrow's tasks" },
+    yesterday: { type: "boolean", description: "Yesterday's tasks" },
+    "this-week": { type: "boolean", description: "This week's tasks (incl. bucket=WEEK)" },
+    "next-week": { type: "boolean", description: "Next week's tasks" },
+    "this-month": { type: "boolean", description: "This month's tasks (incl. bucket=MONTH)" },
+    "next-month": { type: "boolean", description: "Next month's tasks" },
+    date: { type: "string", description: "Single-day filter (ISO or natural)" },
+    month: { type: "string", description: "Month filter (YYYY-MM or 'may 2026')" },
+    from: { type: "string", description: "Start date for custom range" },
+    to: { type: "string", description: "End date for custom range" },
+    overdue: { type: "boolean", description: "Only overdue tasks" },
+    // Status + structure filters
+    status: { type: "string", description: "Comma-separated: inbox,planned,done,trashed,active,all" },
+    planned: { type: "boolean", description: "Tasks with a date/datetime/bucket" },
+    unplanned: { type: "boolean", description: "Alias for --inbox" },
+    tag: { type: "string", description: "Filter by tag id" },
+    priority: { type: "string", description: "Priority 1-3" },
+    connector: { type: "string", description: "gmail | linear | akiflow | none" },
+    bucket: { type: "string", description: "week | month" },
+    recurring: { type: "boolean", description: "Only recurring tasks" },
   },
   run: async ({ args }) => {
     const options: LsOptions = {
@@ -347,6 +448,11 @@ export const lsCommand = defineCommand({
       json: args.json as boolean,
       plain: args.plain as boolean,
     };
+
+    // Build the extended filter from the new flag set. If any of these flags
+    // are set, we apply this filter AFTER the existing filterTasks() pass.
+    const extendedFilter = buildExtendedFilter(args);
+    const useExtended = hasExtendedFlags(args);
 
     const client = createClient();
 
@@ -372,7 +478,25 @@ export const lsCommand = defineCommand({
           ? addVirtualRecurringTasksForToday(tasks)
           : tasks;
 
-      const filteredTasks = filterTasks(tasksWithVirtualRecurring, options);
+      let filteredTasks = filterTasks(tasksWithVirtualRecurring, options);
+      if (useExtended) {
+        filteredTasks = applyExtendedFilters(filteredTasks, extendedFilter);
+      }
+
+      if (args.raw) {
+        const output = JSON.stringify(
+          { result: filteredTasks, next_cursor: null, errors: [] },
+          null,
+          2,
+        );
+        await new Promise<void>((resolve, reject) => {
+          process.stdout.write(output + "\n", (err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+        return;
+      }
 
       if (options.json) {
         const output = JSON.stringify(filteredTasks, null, 2);
