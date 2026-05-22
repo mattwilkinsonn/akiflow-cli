@@ -10,6 +10,7 @@ import { cal } from "./commands/cal";
 import { block } from "./commands/block";
 import { authCommand } from "./commands/auth";
 import { cacheCommand } from "./commands/cache";
+import { doctorCommand } from "./commands/doctor";
 
 const hello = defineCommand({
   meta: {
@@ -39,6 +40,7 @@ const main = defineCommand({
     block,
     auth: authCommand,
     cache: cacheCommand,
+    doctor: doctorCommand,
   },
 });
 

@@ -192,6 +192,26 @@ export class AkiflowClient {
     }
   }
 
+  /**
+   * Generic GET for any v5 resource. Composes the query string from
+   * `params` (sync_token, limit) and delegates to the internal request()
+   * which handles auth + token refresh on 401.
+   *
+   * Used by the cache layer (src/lib/cache/) to sync resources that
+   * don't have typed-method coverage in this class (events, calendars,
+   * accounts, contacts).
+   */
+  async get<T>(
+    path: string,
+    params: { sync_token?: string; limit?: number } = {},
+  ): Promise<ApiResponse<T>> {
+    const qs = new URLSearchParams();
+    if (params.limit != null) qs.set("limit", String(params.limit));
+    if (params.sync_token != null) qs.set("sync_token", params.sync_token);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return this.request<T>("GET", `${path}${suffix}`);
+  }
+
   async getTasks(options: { limit?: number; syncToken?: string } = {}): Promise<
     ApiResponse<Task[]>
   > {
