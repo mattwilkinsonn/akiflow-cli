@@ -9,6 +9,12 @@ import { syncTasksCache } from "../lib/tasks-local-cache";
 import { rrulestr } from "rrule";
 import { filterTasks as applyExtendedFilters, type TaskFilter, type StatusName } from "../lib/filters/task";
 import { parseMonth, resolveRange, type NamedRange } from "../lib/date-parser";
+import {
+  emptyContext,
+  toCleanedTaskView,
+  type ResolveContext,
+} from "../lib/format/cleaned-types";
+import type { Account, Label } from "../lib/api/types";
 
 interface TaskContext {
   tasks: Array<{
@@ -304,6 +310,33 @@ async function saveTaskContext(tasks: Task[]): Promise<void> {
 }
 
 // ============================================================
+// ResolveContext loader for cleaned --json output
+// ============================================================
+
+async function buildResolveContext(
+  client: ReturnType<typeof createClient>,
+): Promise<ResolveContext> {
+  const ctx = emptyContext();
+  try {
+    const labelsResp = await client.getLabels({ limit: 2500 });
+    for (const l of labelsResp.data as Label[]) {
+      ctx.labelsById.set(l.id, l);
+    }
+  } catch {
+    /* empty context is still usable — project name just won't resolve */
+  }
+  try {
+    const accountsResp = await client.get<Account>("/v5/accounts", { limit: 2500 });
+    for (const a of accountsResp.data) {
+      ctx.accountsById.set(a.id, a);
+    }
+  } catch {
+    /* same fallback */
+  }
+  return ctx;
+}
+
+// ============================================================
 // Extended-filter mapping (fork v0.1) — args → TaskFilter
 // ============================================================
 
@@ -499,7 +532,15 @@ export const lsCommand = defineCommand({
       }
 
       if (options.json) {
-        const output = JSON.stringify(filteredTasks, null, 2);
+        // Cleaned shape: resolve label + account names from cache files
+        // when available, else fall back to fetching them.
+        const ctx = await buildResolveContext(client);
+        const cleaned = filteredTasks.map((t) => toCleanedTaskView(t, ctx));
+        const output = JSON.stringify(
+          { result: cleaned, next_cursor: null, errors: [] },
+          null,
+          2,
+        );
         await new Promise<void>((resolve, reject) => {
           process.stdout.write(output + '\n', (err) => {
             if (err) reject(err);

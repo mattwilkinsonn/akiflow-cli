@@ -34,8 +34,9 @@ describe("af cal (BDD — new merged-timeline mode)", () => {
     );
     expect(event).toBeDefined();
     expect(event.type).toBe("event");
-    expect(event.meeting_url).toBe("https://meet.google.com/abc-defg-hij");
-    expect(event.meeting_solution).toBe("google_meet");
+    // Cleaned shape nests meeting under a single object
+    expect(event.meeting.url).toBe("https://meet.google.com/abc-defg-hij");
+    expect(event.meeting.solution).toBe("google_meet");
   });
 
   test("--raw emits full record envelope", async () => {

@@ -3,6 +3,8 @@ import { createClient } from "../lib/api/client";
 import type { Event, Task, TimeSlot } from "../lib/api/types";
 import { filterEvents, mergeTimeline, type EventFilter, type TimelineEntry } from "../lib/filters/event";
 import { resolveRange, type NamedRange } from "../lib/date-parser";
+import { emptyContext, toCleanedCalView } from "../lib/format/cleaned-types";
+import type { Account, Calendar } from "../lib/api/types";
 
 interface TimeRange {
   start: Date;
@@ -246,8 +248,21 @@ async function runMergedCalendar(args: Record<string, unknown>): Promise<void> {
   }
 
   if (args.json) {
-    // Cleaned shape: surface the most useful fields per entry
-    const cleaned = merged.map((m) => cleanedCalEntry(m));
+    // Cleaned shape: resolve calendar + account names
+    const ctx = emptyContext();
+    try {
+      const calsResp = await client.get<Calendar>("/v5/calendars", { limit: 2500 });
+      for (const c of calsResp.data) ctx.calendarsById.set(c.id, c);
+    } catch {
+      /* empty context still works */
+    }
+    try {
+      const accsResp = await client.get<Account>("/v5/accounts", { limit: 2500 });
+      for (const a of accsResp.data) ctx.accountsById.set(a.id, a);
+    } catch {
+      /* same */
+    }
+    const cleaned = merged.map((m) => toCleanedCalView(m, ctx));
     console.log(
       JSON.stringify({ result: cleaned, next_cursor: null, errors: [] }, null, 2),
     );
@@ -255,37 +270,6 @@ async function runMergedCalendar(args: Record<string, unknown>): Promise<void> {
   }
 
   console.log(formatMergedTimeline(merged));
-}
-
-function cleanedCalEntry(m: TimelineEntry): Record<string, unknown> {
-  const base = {
-    id: (m.record as { id: string }).id,
-    type: m.type,
-    start: m.start.toISOString(),
-    end: m.end?.toISOString() ?? null,
-  };
-  if (m.type === "event") {
-    const e = m.record as Event;
-    return {
-      ...base,
-      title: e.title,
-      calendar_id: e.calendar_id,
-      meeting_url: e.meeting_url,
-      meeting_solution: e.meeting_solution,
-      attendees: e.attendees,
-      declined: e.declined,
-      status: e.status,
-      recurring_id: e.recurring_id,
-      task_id: e.task_id,
-      time_slot_id: e.time_slot_id,
-    };
-  }
-  if (m.type === "time_slot") {
-    const s = m.record as TimeSlot;
-    return { ...base, title: s.title, calendar_id: s.calendar_id, label_id: s.label_id };
-  }
-  const t = m.record as Task;
-  return { ...base, title: t.title, project_id: t.listId, priority: t.priority };
 }
 
 function formatMergedTimeline(entries: TimelineEntry[]): string {
