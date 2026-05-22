@@ -3,158 +3,158 @@ import { defineCommand } from "citty";
 type ShellType = "bash" | "zsh" | "fish";
 
 interface CommandInfo {
-  name: string;
-  description: string;
-  flags: Array<{
-    name: string;
-    short?: string;
-    description: string;
-    type: "boolean" | "string";
-  }>;
-  subcommands?: Record<string, CommandInfo>;
+	name: string;
+	description: string;
+	flags: Array<{
+		name: string;
+		short?: string;
+		description: string;
+		type: "boolean" | "string";
+	}>;
+	subcommands?: Record<string, CommandInfo>;
 }
 
 const COMMANDS: Record<string, CommandInfo> = {
-  add: {
-    name: "add",
-    description: "Create a new task",
-    flags: [
-      {
-        name: "today",
-        short: "t",
-        description: "Schedule task for today",
-        type: "boolean",
-      },
-      {
-        name: "tomorrow",
-        description: "Schedule task for tomorrow",
-        type: "boolean",
-      },
-      {
-        name: "date",
-        short: "d",
-        description: "Natural language date (e.g., 'next friday', 'in 3 days')",
-        type: "string",
-      },
-      {
-        name: "project",
-        short: "p",
-        description: "Assign to project/label by name",
-        type: "string",
-      },
-    ],
-  },
-  do: {
-    name: "do",
-    description: "Mark tasks as complete",
-    flags: [],
-  },
-  ls: {
-    name: "ls",
-    description: "List tasks",
-    flags: [
-      {
-        name: "inbox",
-        description: "Show tasks without date",
-        type: "boolean",
-      },
-      {
-        name: "all",
-        description: "Show all tasks",
-        type: "boolean",
-      },
-      {
-        name: "done",
-        description: "Show only completed tasks",
-        type: "boolean",
-      },
-      {
-        name: "project",
-        description: "Filter by project name",
-        type: "string",
-      },
-      {
-        name: "json",
-        description: "Output as JSON",
-        type: "boolean",
-      },
-      {
-        name: "plain",
-        description: "Plain text output without colors",
-        type: "boolean",
-      },
-    ],
-  },
-  task: {
-    name: "task",
-    description: "Task management commands",
-    flags: [],
-    subcommands: {
-      edit: {
-        name: "edit",
-        description: "Edit a task",
-        flags: [],
-      },
-      move: {
-        name: "move",
-        description: "Move task to a different project",
-        flags: [],
-      },
-      plan: {
-        name: "plan",
-        description: "Schedule task for a specific date",
-        flags: [],
-      },
-      snooze: {
-        name: "snooze",
-        description: "Snooze task by duration",
-        flags: [],
-      },
-      delete: {
-        name: "delete",
-        description: "Delete a task",
-        flags: [],
-      },
-    },
-  },
-  project: {
-    name: "project",
-    description: "Project management commands",
-    flags: [],
-    subcommands: {
-      ls: {
-        name: "ls",
-        description: "List projects",
-        flags: [],
-      },
-      create: {
-        name: "create",
-        description: "Create a new project",
-        flags: [],
-      },
-      color: {
-        name: "color",
-        description: "Set project color",
-        flags: [],
-      },
-    },
-  },
-  hello: {
-    name: "hello",
-    description: "Say hello",
-    flags: [],
-  },
-  completion: {
-    name: "completion",
-    description: "Generate shell completion scripts",
-    flags: [],
-  },
+	add: {
+		name: "add",
+		description: "Create a new task",
+		flags: [
+			{
+				name: "today",
+				short: "t",
+				description: "Schedule task for today",
+				type: "boolean",
+			},
+			{
+				name: "tomorrow",
+				description: "Schedule task for tomorrow",
+				type: "boolean",
+			},
+			{
+				name: "date",
+				short: "d",
+				description: "Natural language date (e.g., 'next friday', 'in 3 days')",
+				type: "string",
+			},
+			{
+				name: "project",
+				short: "p",
+				description: "Assign to project/label by name",
+				type: "string",
+			},
+		],
+	},
+	do: {
+		name: "do",
+		description: "Mark tasks as complete",
+		flags: [],
+	},
+	ls: {
+		name: "ls",
+		description: "List tasks",
+		flags: [
+			{
+				name: "inbox",
+				description: "Show tasks without date",
+				type: "boolean",
+			},
+			{
+				name: "all",
+				description: "Show all tasks",
+				type: "boolean",
+			},
+			{
+				name: "done",
+				description: "Show only completed tasks",
+				type: "boolean",
+			},
+			{
+				name: "project",
+				description: "Filter by project name",
+				type: "string",
+			},
+			{
+				name: "json",
+				description: "Output as JSON",
+				type: "boolean",
+			},
+			{
+				name: "plain",
+				description: "Plain text output without colors",
+				type: "boolean",
+			},
+		],
+	},
+	task: {
+		name: "task",
+		description: "Task management commands",
+		flags: [],
+		subcommands: {
+			edit: {
+				name: "edit",
+				description: "Edit a task",
+				flags: [],
+			},
+			move: {
+				name: "move",
+				description: "Move task to a different project",
+				flags: [],
+			},
+			plan: {
+				name: "plan",
+				description: "Schedule task for a specific date",
+				flags: [],
+			},
+			snooze: {
+				name: "snooze",
+				description: "Snooze task by duration",
+				flags: [],
+			},
+			delete: {
+				name: "delete",
+				description: "Delete a task",
+				flags: [],
+			},
+		},
+	},
+	project: {
+		name: "project",
+		description: "Project management commands",
+		flags: [],
+		subcommands: {
+			ls: {
+				name: "ls",
+				description: "List projects",
+				flags: [],
+			},
+			create: {
+				name: "create",
+				description: "Create a new project",
+				flags: [],
+			},
+			color: {
+				name: "color",
+				description: "Set project color",
+				flags: [],
+			},
+		},
+	},
+	hello: {
+		name: "hello",
+		description: "Say hello",
+		flags: [],
+	},
+	completion: {
+		name: "completion",
+		description: "Generate shell completion scripts",
+		flags: [],
+	},
 };
 
 function generateBashCompletion(): string {
-  const commands = Object.keys(COMMANDS).join("|");
+	const commands = Object.keys(COMMANDS).join("|");
 
-  return `#!/bin/bash
+	return `#!/bin/bash
 # Bash completion for af
 # Installation: af completion bash >> ~/.bashrc
 
@@ -164,47 +164,47 @@ _af_completion() {
   cur="\${COMP_WORDS[COMP_CWORD]}"
   prev="\${COMP_WORDS[COMP_CWORD-1]}"
   words=("\${COMP_WORDS[@]}")
-  cword=\$COMP_CWORD
+  cword=$COMP_CWORD
 
   # Get the main command (first word after 'af')
   local main_cmd=""
-  if [[ \$cword -gt 1 ]]; then
+  if [[ $cword -gt 1 ]]; then
     main_cmd="\${words[1]}"
   fi
 
   # Complete main commands
-  if [[ \$cword -eq 1 ]]; then
-    COMPREPLY=($(compgen -W "${commands}" -- "\$cur"))
+  if [[ $cword -eq 1 ]]; then
+    COMPREPLY=($(compgen -W "${commands}" -- "$cur"))
     return 0
   fi
 
   # Complete subcommands for 'task'
-  if [[ "\$main_cmd" == "task" && \$cword -eq 2 ]]; then
-    COMPREPLY=($(compgen -W "edit move plan snooze delete" -- "\$cur"))
+  if [[ "$main_cmd" == "task" && $cword -eq 2 ]]; then
+    COMPREPLY=($(compgen -W "edit move plan snooze delete" -- "$cur"))
     return 0
   fi
 
   # Complete subcommands for 'project'
-  if [[ "\$main_cmd" == "project" && \$cword -eq 2 ]]; then
-    COMPREPLY=($(compgen -W "ls create color" -- "\$cur"))
+  if [[ "$main_cmd" == "project" && $cword -eq 2 ]]; then
+    COMPREPLY=($(compgen -W "ls create color" -- "$cur"))
     return 0
   fi
 
   # Complete flags for 'add'
-  if [[ "\$main_cmd" == "add" ]]; then
-    COMPREPLY=($(compgen -W "-t --today --tomorrow -d --date -p --project" -- "\$cur"))
+  if [[ "$main_cmd" == "add" ]]; then
+    COMPREPLY=($(compgen -W "-t --today --tomorrow -d --date -p --project" -- "$cur"))
     return 0
   fi
 
   # Complete flags for 'ls'
-  if [[ "\$main_cmd" == "ls" ]]; then
-    COMPREPLY=($(compgen -W "--inbox --all --done --project --json --plain" -- "\$cur"))
+  if [[ "$main_cmd" == "ls" ]]; then
+    COMPREPLY=($(compgen -W "--inbox --all --done --project --json --plain" -- "$cur"))
     return 0
   fi
 
   # Complete flags for 'completion'
-  if [[ "\$main_cmd" == "completion" && \$cword -eq 2 ]]; then
-    COMPREPLY=($(compgen -W "bash zsh fish" -- "\$cur"))
+  if [[ "$main_cmd" == "completion" && $cword -eq 2 ]]; then
+    COMPREPLY=($(compgen -W "bash zsh fish" -- "$cur"))
     return 0
   fi
 
@@ -216,7 +216,7 @@ complete -o bashdefault -o default -o nospace -F _af_completion af
 }
 
 function generateZshCompletion(): string {
-  return `#compdef af
+	return `#compdef af
 
 # Zsh completion for af
 # Installation: af completion zsh > ~/.zsh/completions/_af
@@ -275,17 +275,17 @@ _af() {
     '1: :->command' \\
     '*::arg:->args'
 
-  case \$state in
+  case $state in
     command)
       _describe 'command' commands
       ;;
     args)
       case \${words[2]} in
         add)
-          _arguments \$add_flags
+          _arguments $add_flags
           ;;
         ls)
-          _arguments \$ls_flags
+          _arguments $ls_flags
           ;;
         task)
           _describe 'subcommand' task_subcommands
@@ -306,7 +306,7 @@ _af
 }
 
 function generateFishCompletion(): string {
-  return `# Fish completion for af
+	return `# Fish completion for af
 # Installation: af completion fish | sudo tee /usr/local/share/fish/vendor_completions.d/af.fish
 
 # Main commands
@@ -352,43 +352,43 @@ complete -c af -n "__fish_seen_subcommand_from completion" -f -a "fish" -d "Fish
 }
 
 export const completionCommand = defineCommand({
-  meta: {
-    name: "completion",
-    description: "Generate shell completion scripts",
-  },
-  args: {
-    shell: {
-      type: "positional",
-      description: "Shell type (bash, zsh, or fish)",
-      required: true,
-    },
-  },
-  run: async (context) => {
-    const shell = (context.args.shell as string).toLowerCase() as ShellType;
+	meta: {
+		name: "completion",
+		description: "Generate shell completion scripts",
+	},
+	args: {
+		shell: {
+			type: "positional",
+			description: "Shell type (bash, zsh, or fish)",
+			required: true,
+		},
+	},
+	run: async (context) => {
+		const shell = (context.args.shell as string).toLowerCase() as ShellType;
 
-    if (!["bash", "zsh", "fish"].includes(shell)) {
-      console.error(
-        `Error: Unknown shell "${shell}". Supported shells: bash, zsh, fish`
-      );
-      process.exit(1);
-    }
+		if (!["bash", "zsh", "fish"].includes(shell)) {
+			console.error(
+				`Error: Unknown shell "${shell}". Supported shells: bash, zsh, fish`,
+			);
+			process.exit(1);
+		}
 
-    let completionScript: string;
+		let completionScript: string;
 
-    switch (shell) {
-      case "bash":
-        completionScript = generateBashCompletion();
-        break;
-      case "zsh":
-        completionScript = generateZshCompletion();
-        break;
-      case "fish":
-        completionScript = generateFishCompletion();
-        break;
-      default:
-        completionScript = generateBashCompletion();
-    }
+		switch (shell) {
+			case "bash":
+				completionScript = generateBashCompletion();
+				break;
+			case "zsh":
+				completionScript = generateZshCompletion();
+				break;
+			case "fish":
+				completionScript = generateFishCompletion();
+				break;
+			default:
+				completionScript = generateBashCompletion();
+		}
 
-    console.log(completionScript);
-  },
+		console.log(completionScript);
+	},
 });

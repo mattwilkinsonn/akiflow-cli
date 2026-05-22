@@ -6,15 +6,15 @@
  */
 
 type Tombstoneable = {
-  id: string;
-  deleted_at?: string | null;
-  status?: number | null;
+	id: string;
+	deleted_at?: string | null;
+	status?: number | null;
 };
 
 export function isTombstone<T extends Tombstoneable>(record: T): boolean {
-  if (record.deleted_at != null) return true;
-  if (record.status === 9) return true;
-  return false;
+	if (record.deleted_at != null) return true;
+	if (record.status === 9) return true;
+	return false;
 }
 
 /**
@@ -24,22 +24,22 @@ export function isTombstone<T extends Tombstoneable>(record: T): boolean {
  * the final state.
  */
 export function applyTombstones<T extends Tombstoneable>(
-  existing: T[],
-  incoming: T[],
-  keyOf: (r: T) => string,
+	existing: T[],
+	incoming: T[],
+	keyOf: (r: T) => string,
 ): { kept: T[]; upserts: T[] } {
-  const tombstoneIds = new Set<string>();
-  const upserts: T[] = [];
-  for (const r of incoming) {
-    if (isTombstone(r)) {
-      tombstoneIds.add(keyOf(r));
-    } else {
-      upserts.push(r);
-    }
-  }
-  const upsertIds = new Set(upserts.map(keyOf));
-  const kept = existing.filter(
-    (r) => !tombstoneIds.has(keyOf(r)) && !upsertIds.has(keyOf(r)),
-  );
-  return { kept, upserts };
+	const tombstoneIds = new Set<string>();
+	const upserts: T[] = [];
+	for (const r of incoming) {
+		if (isTombstone(r)) {
+			tombstoneIds.add(keyOf(r));
+		} else {
+			upserts.push(r);
+		}
+	}
+	const upsertIds = new Set(upserts.map(keyOf));
+	const kept = existing.filter(
+		(r) => !tombstoneIds.has(keyOf(r)) && !upsertIds.has(keyOf(r)),
+	);
+	return { kept, upserts };
 }

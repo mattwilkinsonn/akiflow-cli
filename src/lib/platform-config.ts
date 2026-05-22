@@ -7,9 +7,9 @@ import { join } from "node:path";
  * Override: $AF_CACHE_DIR (used by tests + advanced users).
  */
 export function cachePath(): string {
-  return process.env.AF_CACHE_DIR ?? join(homedir(), ".cache", "af");
+	return process.env.AF_CACHE_DIR ?? join(homedir(), ".cache", "af");
 }
 
 export function cacheFile(name: string): string {
-  return join(cachePath(), name);
+	return join(cachePath(), name);
 }

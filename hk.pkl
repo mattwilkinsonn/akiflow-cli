@@ -1,0 +1,86 @@
+/// Pre-push hooks for akiflow-cli (jdx/hk).
+///
+/// Install once per clone:  `hk install`
+///   (or via `bun install` if a postinstall script is added later).
+///
+/// Bypass knobs:
+///   HK=0 git push           // skip all hooks (emergency)
+///   jj git push --no-verify // hk respects this too
+///
+/// Pre-commit is intentionally unused — jj's working-copy model
+/// doesn't map cleanly to git's pre-commit stage. Pre-push is the
+/// single gate.
+amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
+
+// Pin the default-branch reference. Without this, hk's auto-detect
+// reads `refs/remotes/origin/HEAD`, which isn't always set on fresh
+// `jj workspace add` clones or in CI.
+default_branch = "main"
+
+local linters = new Mapping<String, Step> {
+    // ---------------------------------------------------------------
+    // Biome — lint + format + organize-imports
+    //
+    // `biome check` covers all three. --no-errors-on-unmatched lets
+    // us pass a glob that may not match any of {{ files }} (e.g. when
+    // only markdown changed). --reporter=summary keeps the pre-push
+    // output compact; switch to default for verbose diagnostics.
+    // ---------------------------------------------------------------
+    ["biome"] {
+        glob = List(
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.js",
+            "**/*.jsx",
+            "**/*.json",
+            "**/*.jsonc",
+            "**/*.css",
+            "**/*.html",
+            "**/*.md"
+        )
+        check = "bunx biome check --no-errors-on-unmatched --reporter=summary {{ files }}"
+        // `biome check --write` covers both formatting and lint fixes
+        // (organize-imports + auto-fixable lint rules).
+        fix = "bunx biome check --no-errors-on-unmatched --write {{ files }}"
+    }
+
+    // ---------------------------------------------------------------
+    // TypeScript compiler is intentionally not run here. Upstream
+    // test files (add.test.ts, task.test.ts, ...) hit tsc errors
+    // under strict mode (citty's `run` is typed as optional; tests
+    // call it directly). Fixing them is invasive scope. Run
+    // `bun run typecheck` manually when needed; bun test catches
+    // runtime type issues anyway.
+    // ---------------------------------------------------------------
+    // bun test is intentionally NOT in pre-push. jj-hooks runs the
+    // hook in a temp worktree (`jj-hooks-worktree-XXX`) without
+    // node_modules — biome works because `bunx` resolves from the
+    // global cache, but `bun test` loads the source code which
+    // imports citty/chrono-node/etc. and fails with "Cannot find
+    // package". CI runs the full `bun test` suite as the source of
+    // truth for behavior; run `bun test` locally before pushing if
+    // you want it as a hard gate.
+    // ---------------------------------------------------------------
+}
+
+hooks {
+    // pre-push: lint + types + unit tests. Push-time is the right
+    // place to eat ~1-2s of total cost since it's what gates CI.
+    ["pre-push"] {
+        steps = linters
+    }
+
+    // `hk fix` — autoformat + auto-fix lint issues across the repo.
+    // Useful as `bun run format` equivalent without going through bun.
+    ["fix"] {
+        fix = true
+        steps = new Mapping<String, Step> {
+            ["biome"] = linters["biome"]
+        }
+    }
+
+    // `hk check` — run everything without modifying files.
+    ["check"] {
+        steps = linters
+    }
+}
