@@ -76,7 +76,7 @@ describe("block command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await block.run({
+		await block.run!({
 			args: { duration: "1h", title: "Deep Work", _: [] },
 			rawArgs: [],
 		} as never);
@@ -130,7 +130,7 @@ describe("block command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await block.run({
+		await block.run!({
 			args: { duration: "30m", title: "Review", _: [] },
 			rawArgs: [],
 		} as never);
@@ -155,7 +155,7 @@ describe("block command", () => {
 
 		// when
 		try {
-			await block.run({
+			await block.run!({
 				args: { duration: "invalid", title: "Test", _: [] },
 				rawArgs: [],
 			} as never);
@@ -213,7 +213,7 @@ describe("block command", () => {
 
 		// when
 		try {
-			await block.run({
+			await block.run!({
 				args: { duration: "1h", title: "Test", _: [] },
 				rawArgs: [],
 			} as never);
@@ -245,7 +245,7 @@ describe("block command", () => {
 
 		// when
 		try {
-			await block.run({
+			await block.run!({
 				args: { duration: "1h", title: "Test", _: [] },
 				rawArgs: [],
 			} as never);

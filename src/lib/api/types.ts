@@ -119,6 +119,7 @@ export interface CreateTaskPayload {
 	content?: Record<string, unknown>;
 	calendar_id?: string;
 	recurrence?: string;
+	status?: TaskStatus;
 }
 
 export interface UpdateTaskPayload {

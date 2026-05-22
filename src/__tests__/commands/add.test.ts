@@ -55,7 +55,7 @@ describe("add command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: false,
@@ -105,7 +105,7 @@ describe("add command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: true,
@@ -160,7 +160,7 @@ describe("add command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: false,
@@ -208,7 +208,7 @@ describe("add command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: false,
@@ -286,7 +286,7 @@ describe("add command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: false,
@@ -347,7 +347,7 @@ describe("add command", () => {
 
 		// when/then
 		await expect(
-			add.run({
+			add.run!({
 				args: {
 					title: "Test task",
 					today: false,
@@ -394,7 +394,7 @@ describe("add command", () => {
 		);
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: false,
@@ -428,7 +428,7 @@ describe("add command", () => {
 
 		// when/then
 		await expect(
-			add.run({
+			add.run!({
 				args: {
 					title: "Test task",
 					today: false,
@@ -517,7 +517,7 @@ describe("add command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: false,
@@ -616,7 +616,7 @@ describe("add command", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await add.run({
+		await add.run!({
 			args: {
 				title: "Test task",
 				today: true,
@@ -655,7 +655,7 @@ describe("add command", () => {
 
 		// when/then
 		await expect(
-			add.run({
+			add.run!({
 				args: {
 					title: "Test task",
 					today: true,
@@ -690,7 +690,7 @@ describe("add command", () => {
 
 		// when/then
 		await expect(
-			add.run({
+			add.run!({
 				args: {
 					title: "Test task",
 					today: true,

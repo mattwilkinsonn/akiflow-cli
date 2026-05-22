@@ -11,7 +11,7 @@ export async function getDefaultCalendarId(
 			return null;
 		}
 
-		return timeSlots[0]?.calendar_id;
+		return timeSlots[0]?.calendar_id ?? null;
 	} catch {
 		return null;
 	}

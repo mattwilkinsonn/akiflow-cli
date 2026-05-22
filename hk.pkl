@@ -45,12 +45,14 @@ local linters = new Mapping<String, Step> {
     }
 
     // ---------------------------------------------------------------
-    // TypeScript compiler is intentionally not run here. Upstream
-    // test files (add.test.ts, task.test.ts, ...) hit tsc errors
-    // under strict mode (citty's `run` is typed as optional; tests
-    // call it directly). Fixing them is invasive scope. Run
-    // `bun run typecheck` manually when needed; bun test catches
-    // runtime type issues anyway.
+    // TypeScript compiler is intentionally NOT in pre-push. jj-hooks
+    // runs in a temp worktree without node_modules — `bunx tsc` fails
+    // with "Cannot find type definition file for 'bun'/'node'" because
+    // @types/bun/@types/node aren't installed there. biome works
+    // because bunx resolves it from the global cache; tsc needs the
+    // typed deps locally. CI's test.yml runs `bun install` before
+    // `bunx tsc --noEmit`, so the gate exists in CI. Run
+    // `bun run typecheck` locally when needed.
     // ---------------------------------------------------------------
     // bun test is intentionally NOT in pre-push. jj-hooks runs the
     // hook in a temp worktree (`jj-hooks-worktree-XXX`) without

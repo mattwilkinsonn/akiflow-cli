@@ -517,7 +517,7 @@ export async function extractFromBrowser(
 		}
 		return tokens;
 	} else if (browserPath.encryptionMethod === "binary") {
-		const tokens = extractFromSafari(browserPath);
+		const tokens = await extractFromSafari(browserPath);
 		if (tokens.length === 0) {
 			log.warn(
 				"safari_extraction_empty",

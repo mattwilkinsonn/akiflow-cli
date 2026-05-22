@@ -56,7 +56,7 @@ export async function syncResource<
 	while (true) {
 		const params: { sync_token?: string; limit: number } = { limit };
 		if (token) params.sync_token = token;
-		const resp = (await client.get<T[]>(path, params)) as ApiResponse<T[]>;
+		const resp = await client.get<T[]>(path, params);
 		if (!resp.success) {
 			throw new Error(
 				`sync ${opts.resource} failed: ${resp.message ?? "unknown error"}`,
@@ -65,7 +65,8 @@ export async function syncResource<
 		pages++;
 		if (resp.sync_token) token = resp.sync_token;
 
-		for (const r of resp.data) {
+		const dataRecords = resp.data as unknown as T[];
+		for (const r of dataRecords) {
 			if (isTombstone(r)) {
 				tombstoneIds.add(opts.keyOf(r));
 				tombstoneCount++;

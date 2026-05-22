@@ -36,7 +36,7 @@ describe("af add (BDD — locks current upstream behavior)", () => {
 			(r) => r.method === "PATCH" && r.url.pathname === "/v5/tasks",
 		);
 		expect(patchReq).toBeDefined();
-		const body = JSON.parse(patchReq?.body);
+		const body = JSON.parse(patchReq!.body);
 		// PATCH body shape from upstream: array of task payloads
 		expect(Array.isArray(body) || (body && typeof body === "object")).toBe(
 			true,

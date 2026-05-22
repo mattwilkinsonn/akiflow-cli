@@ -276,7 +276,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -327,7 +327,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -388,7 +388,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -425,7 +425,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: true,
 				all: false,
@@ -464,7 +464,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: true,
@@ -503,7 +503,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -542,7 +542,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -581,7 +581,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: true,
@@ -623,7 +623,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -661,7 +661,7 @@ describe("ls command", () => {
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -696,16 +696,18 @@ describe("ls command", () => {
 		const mkdirMock = spyOn(fs, "mkdir").mockResolvedValue(undefined);
 
 		let writtenData = "";
-		const writeFileMock = spyOn(fs, "writeFile").mockImplementation(
-			async (_file: unknown, data: string | Buffer) => {
-				writtenData = String(data);
-				return Promise.resolve(undefined);
-			},
-		);
+		const writeFileMock = spyOn(fs, "writeFile").mockImplementation((async (
+			_file: unknown,
+			data: unknown,
+		) => {
+			writtenData = String(data);
+			return undefined;
+			// biome-ignore lint/suspicious/noExplicitAny: matching fs.writeFile's broad overload set
+		}) as any);
 
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -744,7 +746,7 @@ describe("ls command", () => {
 		});
 
 		try {
-			await lsCommand.run({
+			await lsCommand.run!({
 				args: {
 					inbox: false,
 					all: false,
@@ -1185,7 +1187,7 @@ describe("ls command search functionality", () => {
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
 		// when
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -1224,7 +1226,7 @@ describe("ls command search functionality", () => {
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
 		// when
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -1260,7 +1262,7 @@ describe("ls command search functionality", () => {
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
 		// when
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -1293,7 +1295,7 @@ describe("ls command search functionality", () => {
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
 		// when
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -1330,7 +1332,7 @@ describe("ls command search functionality", () => {
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
 		// when
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,
@@ -1419,7 +1421,7 @@ describe("ls command with title fallback", () => {
 		const consoleLogSpy = spyOn(console, "log").mockImplementation(() => {});
 
 		// when
-		await lsCommand.run({
+		await lsCommand.run!({
 			args: {
 				inbox: false,
 				all: false,

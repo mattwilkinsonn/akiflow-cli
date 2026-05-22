@@ -7,15 +7,18 @@ describe("auth command", () => {
 		// given
 		it("has correct name", () => {
 			// then
-			expect(authCommand.meta?.name).toBe("auth");
+			expect(
+				(authCommand.meta as { name?: string; description?: string })?.name,
+			).toBe("auth");
 		});
 
 		// given
 		it("has correct description", () => {
 			// then
-			expect(authCommand.meta?.description).toBe(
-				"Manage Akiflow authentication",
-			);
+			expect(
+				(authCommand.meta as { name?: string; description?: string })
+					?.description,
+			).toBe("Manage Akiflow authentication");
 		});
 	});
 
@@ -26,7 +29,14 @@ describe("auth command", () => {
 			// then
 			expect(subCommands).toBeDefined();
 			if (subCommands && "status" in subCommands) {
-				expect(await subCommands.status.meta?.name).toBe("status");
+				expect(
+					await (
+						subCommands.status as {
+							meta?: { name?: string; description?: string };
+							run?: (ctx?: unknown) => Promise<void>;
+						}
+					).meta?.name,
+				).toBe("status");
 			}
 		});
 
@@ -36,7 +46,14 @@ describe("auth command", () => {
 			// then
 			expect(subCommands).toBeDefined();
 			if (subCommands && "logout" in subCommands) {
-				expect(await subCommands.logout.meta?.name).toBe("logout");
+				expect(
+					await (
+						subCommands.logout as {
+							meta?: { name?: string; description?: string };
+							run?: (ctx?: unknown) => Promise<void>;
+						}
+					).meta?.name,
+				).toBe("logout");
 			}
 		});
 
@@ -46,7 +63,14 @@ describe("auth command", () => {
 			// then
 			expect(subCommands).toBeDefined();
 			if (subCommands && "refresh" in subCommands) {
-				expect(await subCommands.refresh.meta?.name).toBe("refresh");
+				expect(
+					await (
+						subCommands.refresh as {
+							meta?: { name?: string; description?: string };
+							run?: (ctx?: unknown) => Promise<void>;
+						}
+					).meta?.name,
+				).toBe("refresh");
 			}
 		});
 
@@ -55,9 +79,14 @@ describe("auth command", () => {
 			const subCommands = await authCommand.subCommands;
 			// then
 			if (subCommands && "status" in subCommands) {
-				expect(await subCommands.status.meta?.description).toBe(
-					"Show current authentication status",
-				);
+				expect(
+					await (
+						subCommands.status as {
+							meta?: { name?: string; description?: string };
+							run?: (ctx?: unknown) => Promise<void>;
+						}
+					).meta?.description,
+				).toBe("Show current authentication status");
 			}
 		});
 
@@ -66,9 +95,14 @@ describe("auth command", () => {
 			const subCommands = await authCommand.subCommands;
 			// then
 			if (subCommands && "logout" in subCommands) {
-				expect(await subCommands.logout.meta?.description).toBe(
-					"Clear stored credentials",
-				);
+				expect(
+					await (
+						subCommands.logout as {
+							meta?: { name?: string; description?: string };
+							run?: (ctx?: unknown) => Promise<void>;
+						}
+					).meta?.description,
+				).toBe("Clear stored credentials");
 			}
 		});
 
@@ -77,9 +111,14 @@ describe("auth command", () => {
 			const subCommands = await authCommand.subCommands;
 			// then
 			if (subCommands && "refresh" in subCommands) {
-				expect(await subCommands.refresh.meta?.description).toBe(
-					"Force refresh of authentication token",
-				);
+				expect(
+					await (
+						subCommands.refresh as {
+							meta?: { name?: string; description?: string };
+							run?: (ctx?: unknown) => Promise<void>;
+						}
+					).meta?.description,
+				).toBe("Force refresh of authentication token");
 			}
 		});
 	});
@@ -95,7 +134,8 @@ describe("auth command", () => {
 
 			const subCommands = await authCommand.subCommands;
 			if (subCommands && "status" in subCommands) {
-				await subCommands.status.run();
+				await (subCommands.status as { run?: (ctx?: unknown) => Promise<void> })
+					.run!();
 			}
 
 			// then
@@ -121,7 +161,8 @@ describe("auth command", () => {
 
 			const subCommands = await authCommand.subCommands;
 			if (subCommands && "status" in subCommands) {
-				await subCommands.status.run();
+				await (subCommands.status as { run?: (ctx?: unknown) => Promise<void> })
+					.run!();
 			}
 
 			// then
@@ -157,7 +198,8 @@ describe("auth command", () => {
 
 			const subCommands = await authCommand.subCommands;
 			if (subCommands && "logout" in subCommands) {
-				await subCommands.logout.run();
+				await (subCommands.logout as { run?: (ctx?: unknown) => Promise<void> })
+					.run!();
 			}
 
 			// then
@@ -180,7 +222,8 @@ describe("auth command", () => {
 
 			const subCommands = await authCommand.subCommands;
 			if (subCommands && "logout" in subCommands) {
-				await subCommands.logout.run();
+				await (subCommands.logout as { run?: (ctx?: unknown) => Promise<void> })
+					.run!();
 			}
 
 			// then
@@ -204,7 +247,8 @@ describe("auth command", () => {
 				const consoleLogSpy = spyOn(console, "log");
 
 				// when
-				await authCommand.run();
+				// biome-ignore lint/suspicious/noExplicitAny: citty CommandContext type is complex
+				await authCommand.run!({} as any);
 
 				// then
 				expect(scanBrowsersSpy).toHaveBeenCalled();

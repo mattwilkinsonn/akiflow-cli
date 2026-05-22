@@ -48,7 +48,7 @@ describe("taskPlanCommand", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await taskPlanCommand.run({
+		await taskPlanCommand.run!({
 			args: { id: "task-uuid-1", date: "2026-02-10", at: undefined, _: [] },
 			rawArgs: [],
 		} as any);
@@ -80,7 +80,7 @@ describe("taskPlanCommand", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await taskPlanCommand.run({
+		await taskPlanCommand.run!({
 			args: { id: "task-uuid-1", date: "today", at: undefined, _: [] },
 			rawArgs: [],
 		} as any);
@@ -110,7 +110,7 @@ describe("taskPlanCommand", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await taskPlanCommand.run({
+		await taskPlanCommand.run!({
 			args: { id: "task-uuid-1", date: "tomorrow", at: undefined, _: [] },
 			rawArgs: [],
 		} as any);
@@ -136,7 +136,7 @@ describe("taskPlanCommand", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await taskPlanCommand.run({
+		await taskPlanCommand.run!({
 			args: { id: "task-uuid-1", date: "2026-02-10", at: "21:00", _: [] },
 			rawArgs: [],
 		} as any);
@@ -167,7 +167,7 @@ describe("taskPlanCommand", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await taskPlanCommand.run({
+		await taskPlanCommand.run!({
 			args: { id: "task-uuid-1", date: "today", at: "14:30", _: [] },
 			rawArgs: [],
 		} as any);
@@ -199,7 +199,7 @@ describe("taskPlanCommand", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await taskPlanCommand.run({
+		await taskPlanCommand.run!({
 			args: { id: "task-uuid-1", date: "tomorrow", at: "09:00", _: [] },
 			rawArgs: [],
 		} as any);
@@ -230,7 +230,7 @@ describe("taskPlanCommand", () => {
 		const consoleLogSpy = spyOn(console, "log");
 
 		// when
-		await taskPlanCommand.run({
+		await taskPlanCommand.run!({
 			args: { id: "task-uuid-1", date: undefined, at: "16:30", _: [] },
 			rawArgs: [],
 		} as any);
@@ -257,7 +257,7 @@ describe("taskPlanCommand", () => {
 
 		// when/then
 		await expect(
-			taskPlanCommand.run({
+			taskPlanCommand.run!({
 				args: { id: "task-uuid-1", date: "invalid-date", at: undefined, _: [] },
 				rawArgs: [],
 			} as any),
@@ -280,7 +280,7 @@ describe("taskPlanCommand", () => {
 
 		// when/then
 		await expect(
-			taskPlanCommand.run({
+			taskPlanCommand.run!({
 				args: { id: "task-uuid-1", date: "2026-02-10", at: "invalid", _: [] },
 				rawArgs: [],
 			} as any),
@@ -303,7 +303,7 @@ describe("taskPlanCommand", () => {
 
 		// when/then
 		await expect(
-			taskPlanCommand.run({
+			taskPlanCommand.run!({
 				args: { id: "task-uuid-1", date: undefined, at: undefined, _: [] },
 				rawArgs: [],
 			} as any),

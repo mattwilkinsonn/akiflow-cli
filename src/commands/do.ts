@@ -56,7 +56,7 @@ function resolveTaskId(
 	);
 
 	if (matchingTasks.length === 1) {
-		return matchingTasks[0]?.id;
+		return matchingTasks[0]?.id ?? null;
 	}
 
 	if (matchingTasks.length > 1) {

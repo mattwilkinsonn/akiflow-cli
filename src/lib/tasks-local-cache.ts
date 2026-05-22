@@ -132,7 +132,7 @@ export async function syncTasksCache(
 	const { tasks: updated, syncToken } = await incrementalSyncTasksCache(
 		client,
 		tasksById,
-		existingMeta.syncToken,
+		existingMeta.syncToken ?? "",
 		{ quiet: options.quiet },
 	);
 
