@@ -8,6 +8,9 @@ import {
   type BrowserPath,
   type BrowserType,
 } from "../browser-paths";
+import { createLogger } from "../log";
+
+const log = createLogger({ module: "auth.extract", file: "auth.log" });
 
 export interface ExtractedToken {
   browser: BrowserType;
@@ -57,6 +60,7 @@ export async function getKeychainPassword(
 
   const serviceName = serviceNames[browserName];
   if (!serviceName) {
+    log.warn("keychain_service_name", "unknown browser for keychain lookup", { browser: browserName });
     return null;
   }
 
@@ -69,6 +73,7 @@ export async function getKeychainPassword(
   await proc.exited;
 
   if (proc.exitCode !== 0) {
+    log.warn("keychain_missing", "no keychain entry for browser safe-storage", { browser: browserName, service: serviceName, exit_code: proc.exitCode });
     return null;
   }
 
@@ -452,6 +457,7 @@ export async function extractFromBrowser(
   const browserPath = browserPaths.find((b) => b.id === browser);
 
   if (!browserPath) {
+    log.warn("browser_unknown", "browser id not in supported list", { browser });
     return [];
   }
 
@@ -463,15 +469,25 @@ export async function extractFromBrowser(
 
   // Fall back to cookies
   if (!existsSync(browserPath.cookiePath)) {
+    log.warn("cookie_path_missing", "cookie file not found", { browser: browserPath.id, path: browserPath.cookiePath });
     return [];
   }
 
   if (browserPath.encryptionMethod === "pbkdf2") {
-    return extractFromChrome(browserPath);
+    const tokens = await extractFromChrome(browserPath);
+    if (tokens.length === 0) {
+      log.warn("chrome_extraction_empty", "PBKDF2-decrypted cookies yielded no JWT — Akiflow may have rotated cookie name or format", { browser: browserPath.id });
+    }
+    return tokens;
   } else if (browserPath.encryptionMethod === "binary") {
-    return extractFromSafari(browserPath);
+    const tokens = extractFromSafari(browserPath);
+    if (tokens.length === 0) {
+      log.warn("safari_extraction_empty", "binary cookie parse yielded no JWT — Akiflow may have rotated cookie name or format", { browser: browserPath.id });
+    }
+    return tokens;
   }
 
+  log.warn("no_extraction_method", "browserPath has no encryptionMethod set", { browser: browserPath.id });
   return [];
 }
 
