@@ -12,8 +12,10 @@ import type {
 } from "./types";
 import { AuthError, NetworkError } from "./types";
 
-const BASE_URL = "https://api.akiflow.com";
-const REFRESH_URL = "https://web.akiflow.com/oauth/refreshToken";
+// AF_API_BASE override lets integration tests point the client at a fake
+// HTTP server. Default matches Akiflow's production v5 base.
+const BASE_URL = process.env.AF_API_BASE ?? "https://api.akiflow.com";
+const REFRESH_URL = process.env.AF_REFRESH_URL ?? "https://web.akiflow.com/oauth/refreshToken";
 const WEB_CLIENT_ID = "10";
 const DEFAULT_VERSION = "3";
 const DEFAULT_PLATFORM = "web";
