@@ -1,11 +1,29 @@
 <div align="center">
 
-# akiflow-cli
+# akiflow-cli (archived)
+
+</div>
+
+> [!IMPORTANT]
+> **This repo has been archived.** Development continues in the
+> [zireael](https://github.com/mattwilkinsonn/zireael) monorepo at
+> [`tools/akiflow-cli/`](https://github.com/mattwilkinsonn/zireael/tree/main/tools/akiflow-cli).
+>
+> - **Install:** `brew install mattwilkinsonn/zireael/akiflow-cli` (binary
+>   is still called `af`).
+> - **Issues / PRs:** open them against
+>   [mattwilkinsonn/zireael](https://github.com/mattwilkinsonn/zireael/issues) with
+>   `akiflow-cli` in the title.
+> - **Upstream:** still tracking [`code-yeongyu/akiflow-cli`](https://github.com/code-yeongyu/akiflow-cli)
+>   for fixes you might want to upstream.
+
+---
+
+<div align="center">
 
 **Command-line interface for [Akiflow](https://akiflow.com) task management**
 
-[![CI](https://img.shields.io/github/actions/workflow/status/mattwilkinsonn/akiflow-cli/test.yml?branch=main&labelColor=black&style=flat-square&logo=github&label=tests)](https://github.com/mattwilkinsonn/akiflow-cli/actions/workflows/test.yml)
-[![License](https://img.shields.io/badge/license-MIT-white?labelColor=black&style=flat-square)](https://github.com/mattwilkinsonn/akiflow-cli/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-white?labelColor=black&style=flat-square)](https://github.com/mattwilkinsonn/zireael/blob/main/tools/akiflow-cli/LICENSE)
 
 </div>
 
